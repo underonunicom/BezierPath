@@ -25,6 +25,7 @@ type Methods = {
 export type Path = {
 	Sections : {Section},
 	PathLength : number,
+	CurrentPathWaypoint : number,
 } & Methods
 
 type Module = {
@@ -154,6 +155,7 @@ local function CreateSections(BezierWaypoints : {Vector3}) : {Section}
 		end
 
 		local newSection = {
+			ID = Index,
 			AccumulatedDistance = 0,
 			Positions = SectionPositions,
 			Type = Step,
@@ -233,7 +235,8 @@ function BezierPath.new(Waypoints : {Vector3},CurveSize : number | {number}) : P
 
 	local newPath : Path = {
 		Sections = Sections,
-		PathLength = PathLength
+		PathLength = PathLength,
+		CurrentPathWaypoint = 0,
 	} :: Path
 
 	LoadMethods(newPath)
@@ -282,23 +285,5 @@ function Methods:CalculateClosestPoint(Position: Vector3) : (CFrame, number)
 
 	return self:CalculateUniformCFrame(ClosestT), ClosestT
 end 
-
-local function MakePart(InputtedCFrame : CFrame)
-	local Part = Instance.new("Part")
-	Part.Anchored = true
-	Part.Transparency = 0.5
-	Part.CanCollide = false
-	Part.Size = Vector3.one
-	Part.Color = Color3.new(1, 0.235294, 0.247059)
-	Part.Material = Enum.Material.SmoothPlastic
-	Part.CFrame = InputtedCFrame
-	Part.Parent = workspace
-end
-
-function Methods:VisualizePath()
-	for T = 0,1,1/100 do
-		MakePart(self:CalculateUniformCFrame(T))
-	end
-end
 
 return BezierPath 
